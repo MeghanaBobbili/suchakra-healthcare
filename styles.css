@@ -2138,36 +2138,55 @@ body {
 
     .nav-menu {
         position: fixed;
-        top: 90px;
+        top: 85px;
+        left: 20px;
+        right: 20px;
         flex-direction: column;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        width: 90%;
-        left: 50%;
-        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(25px);
+        width: auto;
+        transform: translateY(-10px);
         text-align: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 20px;
         padding: 20px;
-        margin-left: 0;
+        margin: 0;
         opacity: 0;
         visibility: hidden;
-        max-width: none;
+        z-index: 1000;
     }
 
     .nav-menu.active {
         opacity: 1;
         visibility: visible;
-        top: 100px;
+        transform: translateY(0);
     }
 
     .nav-link {
-        margin: 5px 0;
+        margin: 8px 0;
         border-radius: 15px;
         flex: none;
-        padding: 12px 20px;
+        padding: 14px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        color: var(--text-primary);
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border: 2px solid transparent;
+    }
+
+    .nav-link:hover, .nav-link.active {
+        background: var(--gradient-primary);
+        color: white;
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
     }
 
     .nav-toggle {
@@ -2480,7 +2499,9 @@ body {
     }
     
     .nav-menu {
-        width: calc(100% - 24px);
+        left: 12px;
+        right: 12px;
+        width: auto;
         padding: 16px;
     }
     
