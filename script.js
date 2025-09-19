@@ -444,10 +444,34 @@ function initializeChatbot() {
         if (isOpen) {
             chatbotWindow.classList.add('active');
             if (chatbotBadge) chatbotBadge.style.display = 'none';
-            if (chatbotInput) chatbotInput.focus();
+            
+            // Mobile-specific opening behavior
+            if (isMobile) {
+                // Prevent body scroll when chatbot is open on mobile
+                document.body.style.overflow = 'hidden';
+                originalViewportHeight = window.innerHeight;
+                
+                // Focus input with delay on mobile to avoid keyboard issues
+                setTimeout(() => {
+                    if (chatbotInput) {
+                        chatbotInput.focus();
+                        chatbotInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 300);
+            } else {
+                // Desktop behavior
+                if (chatbotInput) chatbotInput.focus();
+            }
             console.log('Chatbot opened');
         } else {
             chatbotWindow.classList.remove('active');
+            chatbotWindow.classList.remove('keyboard-open');
+            
+            // Restore body scroll on mobile
+            if (isMobile) {
+                document.body.style.overflow = '';
+                keyboardOpen = false;
+            }
             console.log('Chatbot closed');
         }
     });
@@ -456,6 +480,13 @@ function initializeChatbot() {
     chatbotClose.addEventListener('click', () => {
         isOpen = false;
         chatbotWindow.classList.remove('active');
+        chatbotWindow.classList.remove('keyboard-open');
+        
+        // Restore body scroll and reset mobile state
+        if (isMobile) {
+            document.body.style.overflow = '';
+            keyboardOpen = false;
+        }
     });
 
     // Send message function
@@ -549,12 +580,53 @@ function initializeChatbot() {
         sendMessage(chatbotInput.value);
     });
 
-    // Enter key press
+    // Enter key press with mobile optimization
     chatbotInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission
             sendMessage(chatbotInput.value);
+            
+            // On mobile, briefly blur then refocus to prevent keyboard jumping
+            if (isMobile) {
+                chatbotInput.blur();
+                setTimeout(() => {
+                    chatbotInput.focus();
+                }, 100);
+            }
         }
     });
+    
+    // Mobile-specific touch optimizations
+    if (isMobile) {
+        // Prevent zoom on double tap for input
+        chatbotInput.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            chatbotInput.focus();
+        });
+        
+        // Handle input focus for mobile keyboard
+        chatbotInput.addEventListener('focus', () => {
+            if (isOpen) {
+                setTimeout(() => {
+                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+                }, 300);
+            }
+        });
+        
+        // Improve touch scrolling for messages
+        chatbotMessages.style.webkitOverflowScrolling = 'touch';
+        
+        // Close chatbot when clicking outside on mobile
+        document.addEventListener('touchstart', (e) => {
+            if (isOpen && !chatbotWindow.contains(e.target) && !chatbotToggle.contains(e.target)) {
+                isOpen = false;
+                chatbotWindow.classList.remove('active');
+                chatbotWindow.classList.remove('keyboard-open');
+                document.body.style.overflow = '';
+                keyboardOpen = false;
+            }
+        });
+    }
 
     // Suggestion buttons
     suggestionBtns.forEach(btn => {
